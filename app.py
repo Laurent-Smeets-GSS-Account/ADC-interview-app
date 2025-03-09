@@ -588,14 +588,26 @@ def run_assistant(thread_id, assistant_id):
 with st.sidebar:
     st.title("Settings")
     
-    # API Key input
-    api_key = st.text_input("OpenAI API Key", type="password", value=os.environ.get("OPENAI_API_KEY", ""), key="api_key")
+    # Check if API key is already set in environment/secrets
+    api_key_set = os.environ.get("OPENAI_API_KEY") is not None
     
-    # Save API key to environment variable if provided
-    if api_key:
-        os.environ["OPENAI_API_KEY"] = api_key
-        if st.session_state.client is None:
-            st.session_state.client = OpenAI(api_key=api_key)
+    if api_key_set:
+        st.success("✅ OpenAI API key is configured")
+        use_configured_key = st.checkbox("Use configured API key", value=True)
+        
+        if not use_configured_key:
+            api_key = st.text_input("Enter custom OpenAI API Key", type="password", key="api_key_custom")
+            if api_key:
+                os.environ["OPENAI_API_KEY"] = api_key
+                if st.session_state.client is None:
+                    st.session_state.client = OpenAI(api_key=api_key)
+    else:
+        # Original API key input for when no key is configured
+        api_key = st.text_input("OpenAI API Key", type="password", key="api_key")
+        if api_key:
+            os.environ["OPENAI_API_KEY"] = api_key
+            if st.session_state.client is None:
+                st.session_state.client = OpenAI(api_key=api_key)
     
     st.divider()
     
