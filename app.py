@@ -589,8 +589,10 @@ with st.sidebar:
     st.title("Settings")
     
     # API Key input
-    api_key = st.text_input("OpenAI API Key", type="password", value=os.environ.get("OPENAI_API_KEY", ""), key="api_key")
-    
+# With this
+api_key = st.text_input("OpenAI API Key", type="password", 
+                       value=st.secrets.openai.api_key if "openai" in st.secrets else os.environ.get("OPENAI_API_KEY", ""), 
+                       key="api_key")    
     # Save API key to environment variable if provided
     if api_key:
         os.environ["OPENAI_API_KEY"] = api_key
